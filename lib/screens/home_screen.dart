@@ -5,8 +5,17 @@ import '../widgets/search_widget.dart';
 import '../widgets/category_widget.dart';
 import '../widgets/product_widget.dart';
 import 'login_screen.dart';
+import '../widgets/user_drawer.dart';
 
-class HomePage extends StatelessWidget {
+class HomePage extends StatefulWidget {
+  const HomePage({super.key});
+
+  @override
+  State<HomePage> createState() => _HomePageState();
+}
+
+class _HomePageState extends State<HomePage> {
+  final List<Map<String, dynamic>> cartItems = []; // store with quantity
   final List<Map<String, String>> products = List.generate(20, (index) {
     return {"name": "Product ${index + 1}", "price": "\$${(index + 1) * 10}"};
   });
@@ -15,10 +24,8 @@ class HomePage extends StatelessWidget {
     "Electronics",
     "Laptop",
     "Mobile",
-    "Air burds",
+    "Air buds",
   ];
-
-  HomePage({super.key});
 
   Future<void> logoutUser(BuildContext context) async {
     await FirebaseAuth.instance.signOut();
@@ -29,9 +36,28 @@ class HomePage extends StatelessWidget {
     );
   }
 
+  // Add to cart logic with quantity check
+  void addToCart(Map<String, String> product) {
+    setState(() {
+      final index = cartItems.indexWhere(
+        (item) => item['name'] == product['name'],
+      );
+      if (index != -1) {
+        cartItems[index]['quantity'] += 1; // increase quantity
+      } else {
+        cartItems.add({
+          "name": product['name'],
+          "price": product['price'],
+          "quantity": 1,
+        });
+      }
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      endDrawer: UserDrawer(cartItems: cartItems),
       body: Container(
         decoration: _bgGradient(),
         child: SafeArea(
@@ -43,8 +69,8 @@ class HomePage extends StatelessWidget {
                 HeaderWidget(onLogout: () => logoutUser(context)),
                 SearchWidget(),
                 CategoryWidget(categories: categories),
-                SizedBox(height: 10),
-                ProductWidget(products: products),
+                const SizedBox(height: 10),
+                ProductWidget(products: products, onAddToCart: addToCart),
               ],
             ),
           ),
@@ -54,7 +80,7 @@ class HomePage extends StatelessWidget {
   }
 
   BoxDecoration _bgGradient() {
-    return BoxDecoration(
+    return const BoxDecoration(
       gradient: LinearGradient(
         begin: Alignment.topLeft,
         end: Alignment.bottomRight,

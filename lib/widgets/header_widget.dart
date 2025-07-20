@@ -12,7 +12,7 @@ class HeaderWidget extends StatelessWidget {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Text(
+          const Text(
             "ElectroZone",
             style: TextStyle(
               fontSize: 28,
@@ -22,11 +22,11 @@ class HeaderWidget extends StatelessWidget {
           ),
           OutlinedButton(
             onPressed: onLogout,
-            child: Icon(Icons.logout_outlined, color: Colors.white),
+            child: const Icon(Icons.logout_outlined, color: Colors.white),
           ),
           GestureDetector(
-            onTap: () {}, // Later use for drawer or user profile
-            child: CircleAvatar(
+            onTap: () => Scaffold.of(context).openEndDrawer(),
+            child: const CircleAvatar(
               radius: 25,
               backgroundImage: AssetImage("assets/images/logo.jpg"),
             ),
