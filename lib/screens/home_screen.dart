@@ -1,10 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:firebase_auth/firebase_auth.dart';
+
 import 'package:electro_zone/widgets/header_widget.dart';
 import '../widgets/search_widget.dart';
 import '../widgets/category_widget.dart';
 import '../widgets/product_widget.dart';
-import 'login_screen.dart';
 import '../widgets/user_drawer.dart';
 
 class HomePage extends StatefulWidget {
@@ -16,9 +15,27 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   final List<Map<String, dynamic>> cartItems = []; // store with quantity
-  final List<Map<String, String>> products = List.generate(20, (index) {
-    return {"name": "Product ${index + 1}", "price": "\$${(index + 1) * 10}"};
-  });
+  // final List<Map<String, String>> products = List.generate(20, (index) {
+  //   return {"name": "Product ${index + 1}", "price": "\$${(index + 1) * 10}"};
+  // });
+
+  final List<Map<String, String>> products = [
+    {
+      "name": "iPhone 15 Pro",
+      "price": "\$999",
+      "image": "assets/images/iphone.webp",
+    },
+    {
+      "name": "MacBook Air M2",
+      "price": "\$1200",
+      "image": "assets/images/air_m2.jpeg",
+    },
+    {
+      "name": "iPhone 15 Pro",
+      "price": "\$999",
+      "image": "assets/images/iphone15.jpg",
+    },
+  ];
 
   final List<String> categories = [
     "Electronics",
@@ -27,31 +44,34 @@ class _HomePageState extends State<HomePage> {
     "Air buds",
   ];
 
-  Future<void> logoutUser(BuildContext context) async {
-    await FirebaseAuth.instance.signOut();
-    Navigator.pushAndRemoveUntil(
-      context,
-      MaterialPageRoute(builder: (_) => LoginScreen()),
-      (route) => false,
-    );
-  }
-
   // Add to cart logic with quantity check
   void addToCart(Map<String, String> product) {
-    setState(() {
-      final index = cartItems.indexWhere(
-        (item) => item['name'] == product['name'],
-      );
-      if (index != -1) {
-        cartItems[index]['quantity'] += 1; // increase quantity
-      } else {
-        cartItems.add({
-          "name": product['name'],
-          "price": product['price'],
-          "quantity": 1,
-        });
-      }
-    });
+    final existingItemIndex = cartItems.indexWhere(
+      (item) => item['name'] == product['name'],
+    );
+
+    if (existingItemIndex != -1) {
+      // If product already in cart, just increase quantity
+      cartItems[existingItemIndex]['quantity'] =
+          (cartItems[existingItemIndex]['quantity'] as int) + 1;
+
+      cartItems[existingItemIndex]['totalPrice'] =
+          (cartItems[existingItemIndex]['quantity'] as int) *
+          double.parse(
+            cartItems[existingItemIndex]['price'].toString().replaceAll(
+              '\$',
+              '',
+            ),
+          );
+    } else {
+      // Add new product with quantity and totalPrice
+      cartItems.add({
+        'name': product['name']!,
+        'price': product['price']!,
+        'quantity': 1,
+        'totalPrice': double.parse(product['price']!.replaceAll('\$', '')),
+      });
+    }
   }
 
   @override
@@ -66,7 +86,7 @@ class _HomePageState extends State<HomePage> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                HeaderWidget(onLogout: () => logoutUser(context)),
+                HeaderWidget(),
                 SearchWidget(),
                 CategoryWidget(categories: categories),
                 const SizedBox(height: 10),

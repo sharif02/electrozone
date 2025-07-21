@@ -1,9 +1,20 @@
+import 'package:electro_zone/screens/cart_screen.dart';
+import 'package:electro_zone/screens/login_screen.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
 class UserDrawer extends StatelessWidget {
   final List<Map<String, dynamic>> cartItems;
 
   const UserDrawer({super.key, required this.cartItems});
+  Future<void> logoutUser(BuildContext context) async {
+    await FirebaseAuth.instance.signOut();
+    Navigator.pushAndRemoveUntil(
+      context,
+      MaterialPageRoute(builder: (_) => LoginScreen()),
+      (route) => false,
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -23,24 +34,20 @@ class UserDrawer extends StatelessWidget {
             title: const Text("Profile Info"),
             onTap: () {},
           ),
-          ExpansionTile(
+
+          ListTile(
             leading: const Icon(Icons.shopping_cart),
             title: const Text("Cart Items"),
-            children:
-                cartItems.isEmpty
-                    ? [
-                      const Padding(
-                        padding: EdgeInsets.all(8.0),
-                        child: Text("Cart is empty"),
-                      ),
-                    ]
-                    : cartItems.map((item) {
-                      return ListTile(
-                        title: Text("${item['name']} (x${item['quantity']})"),
-                        subtitle: Text(item['price']),
-                      );
-                    }).toList(),
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (_) => CartScreen(cartItems: cartItems),
+                ),
+              );
+            },
           ),
+
           ListTile(
             leading: const Icon(Icons.payment),
             title: const Text("Payment Info"),
@@ -51,7 +58,7 @@ class UserDrawer extends StatelessWidget {
             leading: const Icon(Icons.logout),
             title: const Text("Logout"),
             onTap: () {
-              Navigator.pushReplacementNamed(context, '/login');
+              logoutUser(context);
             },
           ),
         ],

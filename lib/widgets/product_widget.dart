@@ -46,9 +46,12 @@ class ProductWidget extends StatelessWidget {
                   borderRadius: const BorderRadius.vertical(
                     top: Radius.circular(15),
                   ),
-                ),
-                child: const Center(
-                  child: Icon(Icons.image, color: Colors.blueAccent, size: 50),
+                  image: DecorationImage(
+                    image: AssetImage(
+                      product['image'] ?? 'assets/images/iPhone_15_Pro.webp',
+                    ),
+                    fit: BoxFit.cover,
+                  ),
                 ),
               ),
 
