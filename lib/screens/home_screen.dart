@@ -23,17 +23,20 @@ class _HomePageState extends State<HomePage> {
     {
       "name": "iPhone 15 Pro",
       "price": "\$999",
-      "image": "assets/images/iphone.webp",
+      "image": "assets/images/mac.jpg",
+      "details": "iPhone 15 Pro is latest model of apple mobile brand.",
     },
     {
       "name": "MacBook Air M2",
       "price": "\$1200",
       "image": "assets/images/air_m2.jpeg",
+      "details": "iPhone 15 Pro is latest model of apple mobile brand.",
     },
     {
-      "name": "iPhone 15 Pro",
+      "name": "iPhone 14 Pro",
       "price": "\$999",
       "image": "assets/images/iphone15.jpg",
+      "details": "iPhone 15 Pro is latest model of apple mobile brand.",
     },
   ];
 
@@ -86,7 +89,7 @@ class _HomePageState extends State<HomePage> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                HeaderWidget(),
+                HeaderWidget(cartItems: cartItems),
                 SearchWidget(),
                 CategoryWidget(categories: categories),
                 const SizedBox(height: 10),

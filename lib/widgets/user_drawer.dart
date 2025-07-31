@@ -1,4 +1,3 @@
-import 'package:electro_zone/screens/cart_screen.dart';
 import 'package:electro_zone/screens/login_screen.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -33,19 +32,6 @@ class UserDrawer extends StatelessWidget {
             leading: const Icon(Icons.person),
             title: const Text("Profile Info"),
             onTap: () {},
-          ),
-
-          ListTile(
-            leading: const Icon(Icons.shopping_cart),
-            title: const Text("Cart Items"),
-            onTap: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (_) => CartScreen(cartItems: cartItems),
-                ),
-              );
-            },
           ),
 
           ListTile(

@@ -1,7 +1,10 @@
+import 'package:electro_zone/screens/cart_screen.dart';
 import 'package:flutter/material.dart';
 
 class HeaderWidget extends StatelessWidget {
-  const HeaderWidget({super.key});
+  final List<Map<String, dynamic>> cartItems;
+
+  const HeaderWidget({super.key, required this.cartItems});
 
   @override
   Widget build(BuildContext context) {
@@ -19,9 +22,30 @@ class HeaderWidget extends StatelessWidget {
             ),
           ),
 
-          GestureDetector(
-            onTap: () => Scaffold.of(context).openEndDrawer(),
-            child: const CircleAvatar(radius: 25),
+          Row(
+            children: [
+              // Cart Icon
+              IconButton(
+                icon: const Icon(Icons.shopping_cart, color: Colors.white),
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (_) => CartScreen(cartItems: cartItems),
+                    ),
+                  );
+                },
+              ),
+
+              // Profile Avatar
+              GestureDetector(
+                onTap: () => Scaffold.of(context).openEndDrawer(),
+                child: const CircleAvatar(
+                  radius: 25,
+                  backgroundImage: AssetImage("assets/images/logo.jpg"),
+                ),
+              ),
+            ],
           ),
         ],
       ),
