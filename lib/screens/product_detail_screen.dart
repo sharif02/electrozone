@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 
 class ProductDetailScreen extends StatefulWidget {
   final Map<String, String> product;
-  final Function(Map<String, String>) onAddToCart;
+  final Function(Map<String, dynamic>) onAddToCart;
 
   const ProductDetailScreen({
     super.key,
@@ -17,19 +17,20 @@ class ProductDetailScreen extends StatefulWidget {
 class _ProductDetailScreenState extends State<ProductDetailScreen> {
   int quantity = 1;
 
+  double get unitPrice =>
+      double.tryParse(widget.product['price']!.replaceAll('\$', '')) ?? 0;
+
+  double get totalPrice => unitPrice * quantity;
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text(widget.product['name']!),
-        backgroundColor: Colors.blueAccent,
-      ),
+      appBar: AppBar(title: Text(widget.product['name']!)),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Product Image
             Container(
               height: 250,
               width: double.infinity,
@@ -42,25 +43,19 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
               ),
             ),
             const SizedBox(height: 20),
-            Text(
-              widget.product['name']!,
-              style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
-            ),
-            const SizedBox(height: 20),
+            Text(widget.product['name']!, style: const TextStyle(fontSize: 24)),
+            const SizedBox(height: 10),
             Text(
               widget.product['details']!,
-              style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+              style: const TextStyle(fontSize: 16),
             ),
             const SizedBox(height: 10),
             Text(
-              widget.product['price']!,
+              "Price: \$${unitPrice.toStringAsFixed(2)}",
               style: const TextStyle(fontSize: 20, color: Colors.blueAccent),
             ),
             const SizedBox(height: 20),
-
-            // Quantity Selector
             Row(
-              mainAxisAlignment: MainAxisAlignment.start,
               children: [
                 IconButton(
                   onPressed: () {
@@ -72,25 +67,23 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                 ),
                 Text("$quantity", style: const TextStyle(fontSize: 20)),
                 IconButton(
-                  onPressed: () {
-                    setState(() => quantity++);
-                  },
+                  onPressed: () => setState(() => quantity++),
                   icon: const Icon(Icons.add_circle, color: Colors.green),
                 ),
+                const SizedBox(width: 20),
+                Text("Total: \$${totalPrice.toStringAsFixed(2)}"),
               ],
             ),
             const Spacer(),
-
-            // Add to Cart Button
             SizedBox(
               width: double.infinity,
               child: ElevatedButton.icon(
                 onPressed: () {
-                  final productWithQuantity = {
-                    ...widget.product,
-                    'quantity': quantity.toString(),
-                  };
-                  widget.onAddToCart(productWithQuantity);
+                  widget.onAddToCart({
+                    'name': widget.product['name']!,
+                    'price': widget.product['price']!,
+                    'quantity': quantity,
+                  });
                   Navigator.pop(context);
                 },
                 icon: const Icon(Icons.add_shopping_cart),

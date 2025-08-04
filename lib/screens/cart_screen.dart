@@ -1,5 +1,5 @@
-import 'package:electro_zone/screens/payment_screen.dart';
 import 'package:flutter/material.dart';
+import 'payment_screen.dart';
 
 class CartScreen extends StatefulWidget {
   final List<Map<String, dynamic>> cartItems;
@@ -19,9 +19,31 @@ class _CartScreenState extends State<CartScreen> {
     return total;
   }
 
-  void removeItem(int index) {
+  void increaseQuantity(int index) {
     setState(() {
-      widget.cartItems.removeAt(index);
+      widget.cartItems[index]['quantity'] =
+          (widget.cartItems[index]['quantity'] as int) + 1;
+      widget.cartItems[index]['totalPrice'] =
+          (widget.cartItems[index]['quantity'] as int) *
+          double.parse(
+            widget.cartItems[index]['price'].toString().replaceAll('\$', ''),
+          );
+    });
+  }
+
+  void decreaseQuantity(int index) {
+    setState(() {
+      int currentQty = widget.cartItems[index]['quantity'] as int;
+      if (currentQty > 1) {
+        widget.cartItems[index]['quantity'] = currentQty - 1;
+        widget.cartItems[index]['totalPrice'] =
+            (widget.cartItems[index]['quantity'] as int) *
+            double.parse(
+              widget.cartItems[index]['price'].toString().replaceAll('\$', ''),
+            );
+      } else {
+        widget.cartItems.removeAt(index);
+      }
     });
   }
 
@@ -58,30 +80,74 @@ class _CartScreenState extends State<CartScreen> {
                       itemCount: widget.cartItems.length,
                       itemBuilder: (context, index) {
                         final item = widget.cartItems[index];
-                        return ListTile(
-                          leading: const Icon(Icons.shopping_bag),
-                          title: Text(item['name']),
-                          subtitle: Text(
-                            "Price: \$${item['price']}  |  Quantity: ${item['quantity']}",
+                        return Card(
+                          margin: const EdgeInsets.symmetric(
+                            horizontal: 12,
+                            vertical: 8,
                           ),
-                          trailing: Row(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              Text(
-                                "Total: \$${item['totalPrice']}",
-                                style: const TextStyle(
-                                  fontWeight: FontWeight.bold,
-                                  color: Colors.green,
+                          child: Padding(
+                            padding: const EdgeInsets.all(12.0),
+                            child: Row(
+                              children: [
+                                const Icon(Icons.shopping_bag, size: 30),
+                                const SizedBox(width: 10),
+                                Expanded(
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                        item['name'],
+                                        style: const TextStyle(
+                                          fontSize: 16,
+                                          fontWeight: FontWeight.bold,
+                                        ),
+                                      ),
+                                      Text("Price: ${item['price']}"),
+                                      const SizedBox(height: 5),
+                                      Row(
+                                        children: [
+                                          IconButton(
+                                            icon: const Icon(
+                                              Icons.remove_circle,
+                                              color: Colors.red,
+                                            ),
+                                            onPressed:
+                                                () => decreaseQuantity(index),
+                                          ),
+                                          Text(
+                                            "${item['quantity']}",
+                                            style: const TextStyle(
+                                              fontSize: 16,
+                                            ),
+                                          ),
+                                          IconButton(
+                                            icon: const Icon(
+                                              Icons.add_circle,
+                                              color: Colors.green,
+                                            ),
+                                            onPressed:
+                                                () => increaseQuantity(index),
+                                          ),
+                                        ],
+                                      ),
+                                    ],
+                                  ),
                                 ),
-                              ),
-                              IconButton(
-                                icon: const Icon(
-                                  Icons.delete,
-                                  color: Colors.red,
+                                Column(
+                                  crossAxisAlignment: CrossAxisAlignment.end,
+                                  children: [
+                                    Text(
+                                      "Total: \$${item['totalPrice'].toStringAsFixed(2)}",
+                                      style: const TextStyle(
+                                        fontWeight: FontWeight.bold,
+                                        color: Colors.green,
+                                      ),
+                                    ),
+                                  ],
                                 ),
-                                onPressed: () => removeItem(index),
-                              ),
-                            ],
+                              ],
+                            ),
                           ),
                         );
                       },
@@ -103,7 +169,7 @@ class _CartScreenState extends State<CartScreen> {
                               ),
                             ),
                             Text(
-                              "\$${calculateTotal()}",
+                              "\$${calculateTotal().toStringAsFixed(2)}",
                               style: const TextStyle(
                                 fontSize: 20,
                                 fontWeight: FontWeight.bold,
